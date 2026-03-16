@@ -8,6 +8,9 @@ A cinematic F1 informational website powered by [FastF1](https://github.com/theO
 - 🏁 Race Results (full grid classification)
 - 📡 Driver Telemetry (speed · throttle · brake chart from qualifying)
 
+## Live
+-[Live link] (https://apex-f1.onrender.com/)
+
 ## Local Setup
 
 ```bash
