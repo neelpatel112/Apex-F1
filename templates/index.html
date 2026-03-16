@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>APEX — F1 Data Intelligence</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,300;0,600;0,700;0,900;1,300&family=Barlow:wght@300;400;500&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+  <!-- NOISE OVERLAY -->
+  <div class="noise"></div>
+
+  <!-- SCANLINES -->
+  <div class="scanlines"></div>
+
+  <!-- SIDEBAR NAV -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-mark">
+        <span>A</span>
+      </div>
+      <div class="logo-text">
+        <div class="logo-apex">APEX</div>
+        <div class="logo-sub">F1 · DATA · HUB</div>
+      </div>
+    </div>
+
+    <nav class="sidenav">
+      <button class="snav-btn active" data-section="schedule">
+        <span class="snav-icon">◈</span>
+        <span class="snav-label">Calendar</span>
+      </button>
+      <button class="snav-btn" data-section="standings">
+        <span class="snav-icon">◉</span>
+        <span class="snav-label">Standings</span>
+      </button>
+      <button class="snav-btn" data-section="results">
+        <span class="snav-icon">◷</span>
+        <span class="snav-label">Results</span>
+      </button>
+      <button class="snav-btn" data-section="telemetry">
+        <span class="snav-icon">◬</span>
+        <span class="snav-label">Telemetry</span>
+      </button>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="status-dot"></div>
+      <span>LIVE DATA</span>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <div class="main-wrap">
+
+    <!-- TOP BAR -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <span class="breadcrumb-root">APEX</span>
+        <span class="breadcrumb-sep">/</span>
+        <span class="breadcrumb-current" id="breadcrumb">CALENDAR</span>
+      </div>
+      <div class="topbar-right">
+        <div class="ticker">
+          <span class="ticker-label">SZN</span>
+          <span class="ticker-val">2025</span>
+        </div>
+        <div class="ticker">
+          <span class="ticker-label">POWERED BY</span>
+          <span class="ticker-val">FASTF1</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- CONTENT AREA -->
+    <main class="content">
+
+      <!-- ════ SCHEDULE ════ -->
+      <section id="schedule" class="section active">
+        <div class="section-hero">
+          <div class="section-hero-num">01</div>
+          <div>
+            <h1 class="section-title">Race Calendar</h1>
+            <p class="section-desc">Full season schedule with circuit details</p>
+          </div>
+        </div>
+        <div class="ctrl-bar">
+          <div class="ctrl-group">
+            <label class="ctrl-label">SEASON</label>
+            <select id="schedule-year" class="ctrl-select">
+              <option value="2025">2025</option>
+              <option value="2024">2024</option>
+              <option value="2023">2023</option>
+            </select>
+          </div>
+          <button class="action-btn" onclick="loadSchedule()">
+            <span>LOAD DATA</span>
+            <span class="btn-arrow">→</span>
+          </button>
+        </div>
+        <div id="schedule-output" class="output-zone">
+          <div class="empty-state">
+            <div class="empty-icon">◈</div>
+            <p>Select a season and load data</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ════ STANDINGS ════ -->
+      <section id="standings" class="section">
+        <div class="section-hero">
+          <div class="section-hero-num">02</div>
+          <div>
+            <h1 class="section-title">Championship</h1>
+            <p class="section-desc">Drivers & constructors points table</p>
+          </div>
+        </div>
+        <div class="ctrl-bar">
+          <div class="ctrl-group">
+            <label class="ctrl-label">SEASON</label>
+            <select id="standings-year" class="ctrl-select">
+              <option value="2024">2024</option>
+              <option value="2023">2023</option>
+              <option value="2022">2022</option>
+            </select>
+          </div>
+          <div class="tab-group">
+            <button class="tab-btn active" data-tab="drivers" onclick="switchTab(this,'drivers')">DRIVERS</button>
+            <button class="tab-btn" data-tab="constructors" onclick="switchTab(this,'constructors')">CONSTRUCTORS</button>
+          </div>
+          <button class="action-btn" onclick="loadStandings()">
+            <span>LOAD DATA</span>
+            <span class="btn-arrow">→</span>
+          </button>
+        </div>
+        <div id="standings-output" class="output-zone">
+          <div class="empty-state">
+            <div class="empty-icon">◉</div>
+            <p>Select season & category, then load</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ════ RESULTS ════ -->
+      <section id="results" class="section">
+        <div class="section-hero">
+          <div class="section-hero-num">03</div>
+          <div>
+            <h1 class="section-title">Race Results</h1>
+            <p class="section-desc">Full classification for any grand prix</p>
+          </div>
+        </div>
+        <div class="ctrl-bar">
+          <div class="ctrl-group">
+            <label class="ctrl-label">SEASON</label>
+            <select id="results-year" class="ctrl-select">
+              <option value="2024">2024</option>
+              <option value="2023">2023</option>
+              <option value="2022">2022</option>
+            </select>
+          </div>
+          <div class="ctrl-group">
+            <label class="ctrl-label">ROUND</label>
+            <input id="results-round" class="ctrl-input" type="number" min="1" max="24" value="1"/>
+          </div>
+          <button class="action-btn" onclick="loadResults()">
+            <span>LOAD DATA</span>
+            <span class="btn-arrow">→</span>
+          </button>
+        </div>
+        <div id="results-output" class="output-zone">
+          <div class="empty-state">
+            <div class="empty-icon">◷</div>
+            <p>Enter season and round number, then load</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ════ TELEMETRY ════ -->
+      <section id="telemetry" class="section">
+        <div class="section-hero">
+          <div class="section-hero-num">04</div>
+          <div>
+            <h1 class="section-title">Telemetry</h1>
+            <p class="section-desc">Speed · throttle · brake · gear from qualifying</p>
+          </div>
+        </div>
+        <div class="ctrl-bar">
+          <div class="ctrl-group">
+            <label class="ctrl-label">SEASON</label>
+            <select id="tel-year" class="ctrl-select">
+              <option value="2024">2024</option>
+              <option value="2023">2023</option>
+              <option value="2022">2022</option>
+            </select>
+          </div>
+          <div class="ctrl-group">
+            <label class="ctrl-label">ROUND</label>
+            <input id="tel-round" class="ctrl-input" type="number" min="1" max="24" value="1"/>
+          </div>
+          <div class="ctrl-group">
+            <label class="ctrl-label">DRIVER</label>
+            <input id="tel-driver" class="ctrl-input driver-input" type="text" maxlength="3" value="VER" placeholder="VER"/>
+          </div>
+          <button class="action-btn" onclick="loadTelemetry()">
+            <span>LOAD DATA</span>
+            <span class="btn-arrow">→</span>
+          </button>
+        </div>
+        <div id="tel-stats" class="tel-stats hidden"></div>
+        <div id="telemetry-output" class="output-zone">
+          <div class="empty-state">
+            <div class="empty-icon">◬</div>
+            <p>Enter season, round & 3-letter driver code</p>
+          </div>
+        </div>
+        <div class="chart-wrap hidden" id="chart-wrap">
+          <canvas id="tel-chart"></canvas>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- LOADER -->
+  <div id="loader" class="loader hidden">
+    <div class="loader-inner">
+      <div class="loader-ring"></div>
+      <div class="loader-text">
+        <span class="loader-apex">APEX</span>
+        <span class="loader-sub">FETCHING DATA</span>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+        </html>
+        
